@@ -1,1 +1,5 @@
 com.azharkova.kspgenprocessor.AdapterProcessorProvider
+com.azharkova.kspgenprocessor.ComposeProcessorProvider
+com.azharkova.kspgenprocessor.NavigationProcessorProvider
+com.azharkova.kspgenprocessor.EventProcessorProvider
+com.azharkova.kspgenprocessor.ViewProcessorProvider

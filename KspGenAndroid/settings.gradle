@@ -19,3 +19,4 @@ rootProject.name = "KspGenAndroid"
 include ':app'
 include ':kspgenprocessor'
 include ':annotations'
+include ':processor'

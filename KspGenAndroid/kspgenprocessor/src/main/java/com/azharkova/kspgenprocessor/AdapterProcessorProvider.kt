@@ -8,13 +8,10 @@ import com.azharkova.kspgenprocessor.data.AdapterData
 import com.azharkova.kspgenprocessor.data.LayoutData
 import com.azharkova.kspgenprocessor.data.ViewHolderData
 import com.azharkova.kspgenprocessor.util.*
-import com.google.devtools.ksp.closestClassDeclaration
 import com.google.devtools.ksp.getConstructors
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
-import com.google.devtools.ksp.symbol.KSFunctionDeclaration
-import com.google.devtools.ksp.symbol.KSValueParameter
 import java.io.OutputStreamWriter
 
 class AdapterProcessorProvider: SymbolProcessorProvider {
@@ -45,7 +42,7 @@ class AdapterProcessor constructor(private val env: SymbolProcessorEnvironment):
         val annotation = getAnnotation(adapter, "Adapter", Adapter::class.java.name)
         return  annotation?.let {
             val bindType = annotation?.let {
-                getParamValue(annotation, "bindType")
+                getParamValueType(annotation, "bindType")
             }
             val viewholdersParams = getParamValueList(annotation, "holders")
             val viewholders = getViewHolders(
@@ -66,7 +63,7 @@ class AdapterProcessor constructor(private val env: SymbolProcessorEnvironment):
     private fun KSClassDeclaration.toViewHolderData(resolver: Resolver): ViewHolderData {
         val annotation = getAnnotation(this, "BindVH", BindVH::class.java.name)
         val bindType = annotation?.let {
-            getParamValue(annotation, "bindType")
+            getParamValueType(annotation, "bindType")
         }
         val returnType = ReturnsTypeData(bindType?.declaration?.simpleName?.getShortName().orEmpty(),
         bindType?.declaration?.qualifiedName?.asString().orEmpty())
@@ -78,10 +75,6 @@ class AdapterProcessor constructor(private val env: SymbolProcessorEnvironment):
             logger.warn(function.annotations.map{it.shortName.getShortName()}.joinToString (" "))
             function.annotations.any { it.shortName.getShortName() == BindSetup::class.java.simpleName.orEmpty()}
         }
-
-
-
-        //var setup = getFunction(resolver, BindSetup::class, filter = )
 
         val layoutParameter = this.getConstructors()?.map{
             it.parameters.forEach {
@@ -95,7 +88,6 @@ class AdapterProcessor constructor(private val env: SymbolProcessorEnvironment):
         }?.firstOrNull()
         val layoutData = layoutParameter?.let {
              LayoutData(it.type.toString(), "com.azharkova.kspgenandroid.databinding")
-            // logger.warn(layoutData?.name.orEmpty())
         }
         return ViewHolderData(layoutData, name, packageName, bindType = returnType, setupFunc = function?.simpleName?.getShortName().orEmpty())
     }
@@ -113,14 +105,7 @@ class AdapterProcessor constructor(private val env: SymbolProcessorEnvironment):
             }
     }
 
-
-    private fun getLayout(resolver: Resolver): Sequence<KSValueParameter> {
-        return resolver.getSymbolsWithAnnotation((BindLayout::class.java).name)
-            .filterIsInstance<KSValueParameter>().distinct()
-    }
-
-
-    fun generateImplClass(adapters:  List<AdapterData>, codeGenerator: CodeGenerator) {
+    private fun generateImplClass(adapters:  List<AdapterData>, codeGenerator: CodeGenerator) {
         adapters.forEach { classData ->
             val fileSource = classData.generateClassSource()
 

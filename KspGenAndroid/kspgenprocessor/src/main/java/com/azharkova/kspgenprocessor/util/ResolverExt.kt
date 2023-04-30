@@ -7,7 +7,7 @@ import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSType
 
-fun getParamValue(annotation: KSAnnotation, paramName: String): KSType? {
+fun getParamValueType(annotation: KSAnnotation, paramName: String): KSType? {
     val annotationArgument = annotation.arguments
         .find { argument -> argument.name?.asString() == paramName }
     //logger.warn(annotationArgument?.value.toString())
@@ -23,6 +23,12 @@ fun getParamValueList(annotation: KSAnnotation, paramName: String): List<KSType>
     val annotationArgumentValue = annotationArgument?.value as? List<KSType>
 
     return annotationArgumentValue
+}
+
+fun getParamValue(annotation: KSAnnotation, paramName: String): Any? {
+    val annotationArgument = annotation.arguments
+        .find { argument -> argument.name?.asString() == paramName }
+    return annotationArgument?.value
 }
 fun getParamValueSimple(annotation: KSAnnotation, paramName: String): Any? {
     val annotationArgument = annotation.arguments

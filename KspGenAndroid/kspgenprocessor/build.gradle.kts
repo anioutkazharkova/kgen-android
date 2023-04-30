@@ -1,4 +1,6 @@
 plugins {
+    id("com.google.devtools.ksp")
+    id("java-library")
     id("org.jetbrains.kotlin.jvm")
 }
 
